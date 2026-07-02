@@ -1,0 +1,32 @@
+@startuml Microservices
+
+title Warmhouse Microservices Container Diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(User, "User", "A user of the warmhouse system")
+Person(Admin, "Administrator", "An administrator managing the system")
+'System(WarmhouseSystem, "Warmhouse System", "System managing, issuing commands to and collecting data from temperature sensors")
+
+System_Boundary(WarmhouseSystem, "Warmhouse System", "System managing, issuing commands to and collecting data from temperature sensors") {
+    Container(WebUI, "Web UI Microfrontend", "Service", "Handles user interactions and system management")
+    Container(MobileUI, "Mobile UI", "Service", "Handles user interactions and system management")
+    Container(UIAPIGateway, "UI API Gateway", "Service", "Handles user interactions and system management")
+    Container(WebAdminUI, "Web Admin UI", "Service", "Handles user interactions and system management")
+    Container(AdminUIAPIGateway, "Admin UI API Gateway", "Service", "Handles user interactions and system management")
+    Container(Backend, "Backend", "Service", "Handles user interactions and system management")
+    ContainerDb(Database, "Database", "Service", "Handles user interactions and system management")
+}
+
+System_Ext(DeviceAPI, "Device API", "External API for temperature sensors")
+
+Rel(User, WebUI, "Uses the system")
+Rel(User, MobileUI, "Manages the system")
+Rel(Admin, WebAdminUI, "Manages the system")
+Rel(WebUI, UIAPIGateway, "Calls")
+Rel(MobileUI, UIAPIGateway, "Calls")
+Rel(WebAdminUI, AdminUIAPIGateway, "Calls")
+Rel(Backend, Database, "Holds data")
+Rel(Backend, DeviceAPI, "Issues commands and fetches temperature data")
+
+@enduml

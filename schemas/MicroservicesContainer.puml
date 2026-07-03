@@ -2,7 +2,7 @@
 
 title Warmhouse Microservices Container Diagram
 
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!include <C4/C4_Component>
 
 Person(User, "User", "A user of the warmhouse system")
 Person(Admin, "Administrator", "An administrator managing the system")
@@ -14,8 +14,13 @@ System_Boundary(WarmhouseSystem, "Warmhouse System", "System managing, issuing c
     Container(UIAPIGateway, "UI API Gateway", "Service", "Handles user interactions and system management")
     Container(WebAdminUI, "Web Admin UI", "Service", "Handles user interactions and system management")
     Container(AdminUIAPIGateway, "Admin UI API Gateway", "Service", "Handles user interactions and system management")
-    Container(Backend, "Backend", "Service", "Handles user interactions and system management")
-    ContainerDb(Database, "Database", "Service", "Handles user interactions and system management")
+    Container(DeviceRepositoryService, "Device Repository Service", "Service", "Handles user interactions and system management")
+    ContainerDb(DeviceRepositoryDatabase, "Device Database", "Service", "Handles user interactions and system management")
+    Container(DeviceConnectorService, "Device Connector Service", "Service", "Handles user interactions and system management")
+    Container(SiteRepositoryService, "Site Repository Service", "Service", "Handles user interactions and system management")
+    ContainerDb(SiteRepositoryDatabase, "Site Database", "Service", "Handles user interactions and system management")
+    Container(UserRepositoryService, "User Repository Service", "Service", "Handles user interactions and system management")
+    ContainerDb(UserRepositoryDatabase, "User Database", "Service", "Handles user interactions and system management")
 }
 
 System_Ext(DeviceAPI, "Device API", "External API for temperature sensors")
@@ -25,8 +30,20 @@ Rel(User, MobileUI, "Manages the system")
 Rel(Admin, WebAdminUI, "Manages the system")
 Rel(WebUI, UIAPIGateway, "Calls")
 Rel(MobileUI, UIAPIGateway, "Calls")
+Rel(UIAPIGateway, DeviceRepositoryService, "Calls")
+Rel(DeviceRepositoryService, DeviceRepositoryDatabase, "Uses")
+Rel(UIAPIGateway, SiteRepositoryService, "Calls")
+Rel(SiteRepositoryService, SiteRepositoryDatabase, "Uses")
+Rel(DeviceRepositoryService, SiteRepositoryService, "Calls")
+BiRel(DeviceRepositoryService, DeviceConnectorService, "Calls")
+Rel(DeviceRepositoryService, UserRepositoryService, "Calls")
+Rel(DeviceConnectorService, DeviceAPI, "Calls")
+Rel(UserRepositoryService, UserRepositoryDatabase, "Uses")
 Rel(WebAdminUI, AdminUIAPIGateway, "Calls")
-Rel(Backend, Database, "Holds data")
-Rel(Backend, DeviceAPI, "Issues commands and fetches temperature data")
+Rel(AdminUIAPIGateway, DeviceRepositoryService, "Calls")
+Rel(AdminUIAPIGateway, UserRepositoryService, "Calls")
+Rel(AdminUIAPIGateway, SiteRepositoryService, "Calls")
+
+
 
 @enduml

@@ -1,0 +1,21 @@
+@startuml Microservices
+
+title Warmhouse Microservices Device Connector Component Diagram
+
+!include <C4/C4_Component>
+
+Person(User, "User", "A user of the warmhouse system")
+Person(Admin, "Administrator", "An administrator managing the system")
+'System(WarmhouseSystem, "Warmhouse System", "System managing, issuing commands to and collecting data from temperature sensors")
+
+Container_Boundary(DeviceConnectorService, "Device Connector Service", "Service", "Handles user interactions and system management") {
+    Component(API, "Device Connector API", "Component", "Handles user interactions and system management")
+    Component(StateHolder, "Device Connector API", "Component", "Handles user interactions and system management")
+    Component(Connector, "Device Connector API", "Component", "Handles user interactions and system management")
+}
+
+
+
+
+
+@enduml

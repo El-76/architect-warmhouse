@@ -1,6 +1,70 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: smarthome-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+    networks:
+      - smarthome-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_OPTS: -Dzookeeper.4lw.commands.whitelist=ruok
+    ports:
+      - 22181:2181
+    container_name: smarthome-zookeeper
+    networks:
+      - smarthome-network
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - 29092:29092
+    container_name: smarthome-kafka
+    environment:
+      KAFKA_PROFILE: dev
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - smarthome-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:29092 --list || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
   postgres:
     image: postgres:16-alpine
     container_name: smarthome-postgres
@@ -32,15 +96,49 @@ services:
     networks:
       - smarthome-network
 
+  device-connector-api:
+    build:
+      context: ./microservices/device-connector-api
+      dockerfile: Dockerfile
+    container_name: device-connector-api-app
+    ports:
+      - "8083:8083"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  telemetry-api:
+    container_name: telemetry-api-app
+    build:
+      context: ./microservices/telemetry-api
+    ports:
+      - "8082:8082"
+    depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - smarthome-network
+
   app:
     build:
       context: ./smart_home
       dockerfile: Dockerfile
     container_name: smarthome-app
     depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       temperature-api:
+        condition: service_started
+      telemetry-api:
         condition: service_started
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
@@ -53,6 +151,10 @@ services:
 
 volumes:
   postgres_data:
+  kafka_data:
+  zookeeper_data:
+  zookeeper_logs:
+  redis_data:
 
 networks:
   smarthome-network:

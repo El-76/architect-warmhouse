@@ -1,6 +1,0 @@
-/home/maaaah/architect-warmhouse/apps/microservices/telemetry-api/src/main/java/ru/yandex/practicum/warmhouse/telemetry/TelemetryService.java
-/home/maaaah/architect-warmhouse/apps/microservices/telemetry-api/src/main/java/ru/yandex/practicum/warmhouse/telemetry/TelemetryServiceApplication.java
-/home/maaaah/architect-warmhouse/apps/microservices/telemetry-api/src/main/java/ru/yandex/practicum/warmhouse/telemetry/TelemetryServiceController.java
-/home/maaaah/architect-warmhouse/apps/microservices/telemetry-api/src/main/java/ru/yandex/practicum/warmhouse/telemetry/TelemetryServiceImpl.java
-/home/maaaah/architect-warmhouse/apps/microservices/telemetry-api/src/main/java/ru/yandex/practicum/warmhouse/telemetry/TelemetryServiceKafkaConfiguration.java
-/home/maaaah/architect-warmhouse/apps/microservices/telemetry-api/src/main/java/ru/yandex/practicum/warmhouse/telemetry/TelemetryServiceKafkaConsumer.java

@@ -138,7 +138,27 @@ User может иметь несколько Site (квартир, домов).
 
 ### 2. Документация API
 
-Здесь приложите ссылки на документацию API для микросервисов, которые вы спроектировали в первой части проектной работы. Для документирования используйте Swagger/OpenAPI или AsyncAPI.
+Си
+
+#### Синхронное API
+
+Стандартные CRUD API работы с сущностями:
+
+Устройства (Device): ![device-repository-api](./docs/openapi/html/device/index.html)
+Места (Site): ![site-repository-api](./docs/openapi/html/site/index.html)
+Пользователи (User):![user-repository-api](./docs/openapi/html/user/index.html)
+
+#### Асинхронное API
+
+Некоторые сервисы общаются по асинхронному API: ![Асинхронное API](./docs/asyncapi/html/index.html)
+
+device-connector-api получает команды из канала commands, обрабатывает их, используя внешние API для работы с устройствами.
+
+device-connector-api публикует результаты исполнения команд в канал states.
+
+device-connector-api собирает телеметрию с устройств (в poll-режиме, по команде, возможно в push-режиме через например webhook) и публикует её в канал events.
+
+telemetry-api получает телеметрию из канала events и сохраняет величины телеметрии в Redis, чтобы предоставить их клиентам.
 
 # Задание 5. Работа с docker и docker-compose
 

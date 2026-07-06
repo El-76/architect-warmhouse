@@ -1,0 +1,25 @@
+@startuml
+
+title Warmhouse Microservices Device Connector Code Diagram
+
+class DeviceTelemetryPoller {
+    + run() void
+}
+
+class DeviceTelemetryHookHandler {
+    + handleTelemetryHook(deviceId: uint64, payload: []byte) void
+}
+
+class DeviceCommandProcessor {
+    + processCommandQueue() void
+}
+
+class DeviceStateManager {
+    + updateDeviceState(deviceId: uint64, state: DeviceState) void
+}
+
+interface DeviceProtocol {
+    sendCommand(deviceId: uint64, command: Command) CommandResult
+}
+
+@enduml

@@ -21,7 +21,7 @@ System_Boundary(WarmhouseSystem, "Warmhouse System", "System managing, issuing c
     ContainerDb(SiteRepositoryDatabase, "Site Database", "Service", "Holds site data")
     Container(UserRepositoryService, "User Repository Service", "Service", "Holds user entities, performs CRUD operations")
     ContainerDb(UserRepositoryDatabase, "User Database", "Service", "Holds user data")
-    ComponentDb(MessageQueuee, "Message Queue", "Service", "Passes telemetry, commands and their results among services")
+    ContainerDb(MessageQueuee, "Message Queue", "Service", "Passes telemetry, commands and their results among services")
 }
 
 System_Ext(DeviceAPI, "Device API", "External API for temperature sensors")
@@ -45,7 +45,7 @@ Rel(WebAdminUI, AdminUIAPIGateway, "Calls")
 Rel(AdminUIAPIGateway, DeviceRepositoryService, "Calls")
 Rel(AdminUIAPIGateway, UserRepositoryService, "Calls")
 Rel(AdminUIAPIGateway, SiteRepositoryService, "Calls")
-Rel(TelemetryService, MessageQueuee, "Consumes telemetry")
+Rel(MessageQueuee, TelemetryService, "Consumes telemetry")
 BiRel(DeviceConnectorService, MessageQueuee, "Publishes telemetry and command results, consumes commands")
 
 @enduml

@@ -207,7 +207,7 @@ docker logs telemetry-api-app
 Логи продьюсера:
 
 ```
-docker logs device-connector-api-app - логи продьюсера
+docker logs device-connector-api-app
 ```
 
 Получаем последнее значение телеметрии (температуры) из Redis:

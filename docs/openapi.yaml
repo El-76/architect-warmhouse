@@ -1,0 +1,157 @@
+swagger: "2.0"
+info:
+  description: "API that manages device entities."
+  version: "1.0.0"
+  title: "Device Repository API"
+host: "localhost"
+basePath: "/api/v1"
+tags:
+- name: "device"
+  description: "Device management"
+schemes:
+- "http"
+paths:
+  /device:
+    post:
+      tags:
+      - "device"
+      summary: "Add a new device"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Device object that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Device"
+      responses:
+        "400":
+          description: Invalid input
+        "422":
+          description: Validation exception
+    put:
+      tags:
+      - "device"
+      summary: "Update an existing device"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Device object that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/Device"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Device is not found"
+        "422":
+          description: "Validation exception"
+  /device/queryByUser:
+    get:
+      tags:
+      - "device"
+      summary: "Queries devices by user"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "query"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Device"
+        "400":
+          description: "Invalid status value"
+  /device/queryBySite:
+    get:
+      tags:
+      - "device"
+      summary: "Queries devices by site"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "siteId"
+        in: "query"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Device"
+        "400":
+          description: "Invalid status value"
+  /device/{deviceId}:
+    get:
+      tags:
+      - "device"
+      summary: "Gets device by ID"
+      description: "Returns a device"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "deviceId"
+        in: "path"
+        description: "ID of device to return"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Device"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Device not found"
+    delete:
+      tags:
+      - "device"
+      summary: "Deletes a device"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "deviceId"
+        in: "path"
+        description: "ID of device to delete"
+        required: true
+        type: "integer"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Device not found"
+
+definitions:
+  Device:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      site_id:
+        type: "integer"
+      model_id:
+        type: "integer"
+      connection:
+        type: string
+      state:
+        type: "integer"

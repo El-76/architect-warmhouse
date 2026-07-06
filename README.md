@@ -134,23 +134,23 @@ User может иметь несколько Site (квартир, домов).
 
 ### 1. Тип API
 
-Укажите, какой тип API вы будете использовать для взаимодействия микросервисов. Объясните своё решение.
+На первом этапе HTTP/REST тк его использует монолит, возможен переход на gRPC.
+
+Также будет использовано асинхронное взаимодействие сервисов через Kafka, чтобы устранить некоторые недостатки текущей реализации (см. соответствующий раздел).
 
 ### 2. Документация API
-
-Си
 
 #### Синхронное API
 
 Стандартные CRUD API работы с сущностями:
 
-Устройства (Device): ![device-repository-api](./docs/openapi/html/device/index.html)
-Места (Site): ![site-repository-api](./docs/openapi/html/site/index.html)
-Пользователи (User):![user-repository-api](./docs/openapi/html/user/index.html)
+Устройства (Device): [device-repository-api](./docs/openapi/html/device/index.html)  
+Места (Site): [site-repository-api](./docs/openapi/html/site/index.html)  
+Пользователи (User):[user-repository-api](./docs/openapi/html/user/index.html)  
 
 #### Асинхронное API
 
-Некоторые сервисы общаются по асинхронному API: ![Асинхронное API](./docs/asyncapi/html/index.html)
+Некоторые сервисы общаются по асинхронному API: [Асинхронное API](./docs/asyncapi/html/index.html)
 
 device-connector-api получает команды из канала commands, обрабатывает их, используя внешние API для работы с устройствами.
 

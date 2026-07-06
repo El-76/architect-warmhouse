@@ -1,0 +1,409 @@
+openapi: 3.0.1
+info:
+  title: Site Repository API
+  description: API that manages site entities.
+  version: 1.0.0
+servers:
+  - url: http://localhost/api/v1
+tags:
+  - name: site
+    description: Site management
+    x-displayName: site
+  - name: device
+    description: Device management
+    x-displayName: device
+  - name: user
+    description: User management
+    x-displayName: user
+paths:
+  /site:
+    put:
+      tags:
+        - site
+      summary: Update an existing site
+      requestBody:
+        description: Site object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Site'
+        required: true
+      responses:
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: Site is not found
+          content: {}
+        '422':
+          description: Validation exception
+          content: {}
+      x-codegen-request-body-name: body
+    post:
+      tags:
+        - site
+      summary: Add a new site
+      requestBody:
+        description: Site object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Site'
+        required: true
+      responses:
+        '400':
+          description: Invalid input
+          content: {}
+        '422':
+          description: Validation exception
+          content: {}
+      x-codegen-request-body-name: body
+  /site/queryByUser:
+    get:
+      tags:
+        - site
+      summary: Queries sites by user
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Site'
+        '400':
+          description: Invalid status value
+          content: {}
+  /site/{siteId}:
+    get:
+      tags:
+        - site
+      summary: Gets site by ID
+      description: Returns a site
+      parameters:
+        - name: siteId
+          in: path
+          description: ID of site to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: Site not found
+          content: {}
+    delete:
+      tags:
+        - site
+      summary: Deletes a site
+      parameters:
+        - name: siteId
+          in: path
+          description: ID of site to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: Site not found
+          content: {}
+  /device:
+    put:
+      tags:
+        - device
+      summary: Update an existing device
+      requestBody:
+        description: Device object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: Device is not found
+          content: {}
+        '422':
+          description: Validation exception
+          content: {}
+      x-codegen-request-body-name: body
+    post:
+      tags:
+        - device
+      summary: Add a new device
+      requestBody:
+        description: Device object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '400':
+          description: Invalid input
+          content: {}
+        '422':
+          description: Validation exception
+          content: {}
+      x-codegen-request-body-name: body
+  /device/queryByUser:
+    get:
+      tags:
+        - device
+      summary: Queries devices by user
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid status value
+          content: {}
+  /device/queryBySite:
+    get:
+      tags:
+        - device
+      summary: Queries devices by site
+      parameters:
+        - name: siteId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid status value
+          content: {}
+  /device/{deviceId}:
+    get:
+      tags:
+        - device
+      summary: Gets device by ID
+      description: Returns a device
+      parameters:
+        - name: deviceId
+          in: path
+          description: ID of device to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: Device not found
+          content: {}
+    delete:
+      tags:
+        - device
+      summary: Deletes a device
+      parameters:
+        - name: deviceId
+          in: path
+          description: ID of device to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: Device not found
+          content: {}
+  /user:
+    put:
+      tags:
+        - user
+      summary: Update an existing user
+      requestBody:
+        description: User object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: User is not found
+          content: {}
+        '422':
+          description: Validation exception
+          content: {}
+      x-codegen-request-body-name: body
+    post:
+      tags:
+        - user
+      summary: Add a new user
+      requestBody:
+        description: User object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '400':
+          description: Invalid input
+          content: {}
+        '422':
+          description: Validation exception
+          content: {}
+      x-codegen-request-body-name: body
+  /user/queryBySite:
+    get:
+      tags:
+        - user
+      summary: Queries users by site
+      parameters:
+        - name: siteId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid status value
+          content: {}
+  /user/{userId}:
+    get:
+      tags:
+        - user
+      summary: Gets user by ID
+      description: Returns a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: User not found
+          content: {}
+    delete:
+      tags:
+        - user
+      summary: Deletes a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: User not found
+          content: {}
+components:
+  schemas:
+    Site:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Device:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        site_id:
+          type: integer
+        model_id:
+          type: integer
+        connection:
+          type: string
+        state:
+          type: integer
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+x-tagGroups:
+  - name: Site Repository API
+    tags:
+      - site
+  - name: Device Repository API
+    tags:
+      - device
+  - name: User Repository API
+    tags:
+      - user

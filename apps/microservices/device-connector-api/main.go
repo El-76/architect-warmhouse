@@ -12,9 +12,9 @@ import (
 
 func main() {
 	type Event struct {
-		ID          int        `json:"id"`
-		Value       float64    `json:"value"`
-	} 
+		ID    int     `json:"id"`
+		Value float64 `json:"value"`
+	}
 
 	ctx := context.Background()
 
@@ -28,8 +28,8 @@ func main() {
 
 	for {
 		event := Event{
-			ID: 100,
-			Value: 18.0 + float64(time.Now().UnixNano()%10) + float64(time.Now().UnixNano()%100)/100.0,
+			ID:    10,
+			Value: 100.0 + float64(time.Now().UnixNano()%10) + float64(time.Now().UnixNano()%100)/100.0,
 		}
 
 		jsonData, err := json.Marshal(event)

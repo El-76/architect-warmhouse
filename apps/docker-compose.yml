@@ -1,13 +1,150 @@
 version: '3.8'
 
 services:
+  asyncapi-viewer:
+    build:
+      context: ../docs/asyncapi
+      dockerfile: Dockerfile
+    container_name: asyncapi-viewer
+    ports:
+      - "8086:80"
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8085:8080"
+    environment:
+      # Defines the selectable options in the top-bar dropdown menu
+      URLS: "[
+        { url: './spec/docs/openapi/device.yaml', name: 'Device Repository API' },
+        { url: './spec/docs/openapi/site.yaml', name: 'Site Repository API' },
+        { url: './spec/docs/openapi/user.yaml', name: 'User Repository API' }
+      ]"
+    volumes:
+      - ..:/usr/share/nginx/html/spec
+
+  redis:
+    image: redis:7-alpine
+    container_name: smarthome-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+    networks:
+      - smarthome-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_OPTS: -Dzookeeper.4lw.commands.whitelist=ruok
+    ports:
+      - 22181:2181
+    container_name: smarthome-zookeeper
+    networks:
+      - smarthome-network
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - 29092:29092
+    container_name: smarthome-kafka
+    environment:
+      KAFKA_PROFILE: dev
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - smarthome-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:29092 --list || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
   postgres:
     image: postgres:16-alpine
     container_name: smarthome-postgres
-  ## тут нужно добавить настройки
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./smart_home/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - smarthome-network
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d postgres'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
   temperature-api:
-  ## тут нужно добавить приложение
+    build:
+      context: ./temperature-api
+      dockerfile: Dockerfile
+    container_name: temperature-api-app
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
+  device-connector-api:
+    build:
+      context: ./microservices/device-connector-api
+      dockerfile: Dockerfile
+    container_name: device-connector-api-app
+    ports:
+      - "8083:8083"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  telemetry-api:
+    container_name: telemetry-api-app
+    build:
+      context: ./microservices/telemetry-api
+    ports:
+      - "8082:8082"
+    depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - smarthome-network
 
   app:
     build:
@@ -15,9 +152,15 @@ services:
       dockerfile: Dockerfile
     container_name: smarthome-app
     depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       temperature-api:
+        condition: service_started
+      telemetry-api:
         condition: service_started
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
@@ -30,6 +173,10 @@ services:
 
 volumes:
   postgres_data:
+  kafka_data:
+  zookeeper_data:
+  zookeeper_logs:
+  redis_data:
 
 networks:
   smarthome-network:

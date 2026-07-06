@@ -1,0 +1,68 @@
+asyncapi: '2.6.0'
+info:
+  title: Warmhouse Kafka API
+  version: '1.0.0'
+  description: |
+    THe API allows you to:
+      * issue commands to devices
+      * receive device states (actually command results)
+      * receive device telemetry recorda
+
+servers:
+  unencrypted-plain-server:
+    url: 'localhost:19092'
+    protocol: kafka
+    description: plain Kafka broker over an unencrypted channel.
+
+defaultContentType: application/json
+
+channels:
+  events:
+    description: The topic on which telemetry values may be produced and consumed.
+    publish:
+      summary: telemetry events.
+      message:
+        $ref: '#/components/messages/telemetryRecord'
+    subscribe:
+      summary: telemetry events.
+      message:
+        $ref: '#/components/messages/telemetryRecord'
+
+  commands:
+    description: The topic on which commands to the devices are issued, processed by device-connector-api.
+    publish:
+      summary: device commands.
+      message:
+        $ref: '#/components/messages/deviceCommand'
+    subscribe:
+      summary: device commands.
+      message:
+        $ref: '#/components/messages/deviceCommand'
+
+  states:
+    description: The topic on which device states may be produced and consumed.
+    publish:
+      summary: device states.
+      message:
+        $ref: '#/components/messages/deviceState'
+    subscribe:
+      summary: device states.
+      message:
+        $ref: '#/components/messages/deviceState'
+
+components:
+  messages:
+    telemetryRecord:
+      name: telemetryRecord
+      title: Telemetry record
+      summary: Device telemetry record, e.g. temperature
+      contentType: application/json
+    deviceCommand:
+      name: deviceCommand
+      title: Arbitrary command for a device
+      summary: Command to a particular device.
+    deviceState:
+      name: deviceState
+      title: Device state
+      summary: Device state update.
+

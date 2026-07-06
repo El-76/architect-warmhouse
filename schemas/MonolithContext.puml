@@ -1,0 +1,18 @@
+puml
+@startuml Monolith
+
+title Warmhouse Monolith Context Diagram
+
+!include <C4/C4_Component>
+
+Person(User, "User", "A user of the warmhouse system")
+Person(Admin, "Administrator", "An administrator managing the system")
+System(WarmhouseSystem, "Warmhouse System", "System managing, issuing commands to and collecting data from temperature sensors")
+
+System_Ext(TemperatureAPI, "Temperature API", "External API for temperature sensors")
+
+Rel(User, WarmhouseSystem, "Uses the system")
+Rel(Admin, WarmhouseSystem, "Manages the system")
+Rel(WarmhouseSystem, TemperatureAPI, "Issues commands and fetches temperature data")
+
+@enduml

@@ -1,0 +1,56 @@
+@startuml Microservices
+
+title Warmhouse Microservices Entity Relationship Diagram
+
+entity User {
+  * id : uint64
+  --
+  * name : string
+}
+
+entity Site {
+  * id : uint64
+  --
+  * name : string
+}
+
+entity UserSite {
+  * id : uint64
+  --
+  * user_id : uint64
+  * site_id : uint64
+}
+
+entity Device {
+  * id : uint64
+  --
+  * name : string
+  * site_id : uint64
+  * model_id : uint64
+  * connection : string
+  * state : uint64
+}
+
+entity DeviceModel {
+  * id : uint64
+  --
+  * name : string
+  * version : string
+}
+
+entity TelemetryRecord {
+  * id : uint64
+  --
+  * device_id : uint64
+  * payload : []byte
+  * timestamp : time
+}
+
+User ||--o{ UserSite : "has"
+Site ||--o{ UserSite : "has"
+
+Device ||--|| DeviceModel : "has"
+
+Device ||--o{ TelemetryRecord : "generates"
+
+@enduml

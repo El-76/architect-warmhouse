@@ -18,13 +18,15 @@ import (
 type SensorHandler struct {
 	DB                 *db.DB
 	TemperatureService *services.TemperatureService
+        TelemetryService   *services.TelemetryService
 }
 
 // NewSensorHandler creates a new SensorHandler
-func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService) *SensorHandler {
+func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService, telemetryService *services.TelemetryService) *SensorHandler {
 	return &SensorHandler{
 		DB:                 db,
 		TemperatureService: temperatureService,
+		TelemetryService:   telemetryService,
 	}
 }
 
@@ -83,8 +85,20 @@ func (h *SensorHandler) GetSensorByID(c *gin.Context) {
 		return
 	}
 
-	// If this is a temperature sensor, fetch real-time data from the temperature API
-	if sensor.Type == models.Temperature {
+	telemetryData, err := h.TelemetryService.GetDeviceTelemetry(fmt.Sprintf("%d", sensor.ID))
+	if err == nil {
+		// Update sensor with real-time data
+		sensor.Value = telemetryData.Value
+
+		if sensor.Value != 0.0 {
+			log.Printf("Updated telemetry data for device %d from external API", sensor.ID)
+		}
+	} else {
+		log.Printf("Failed to fetch telemetry data for sensor %d: %v", sensor.ID, err)
+	}
+
+	if (err != nil || sensor.Value == 0.0) && sensor.Type == models.Temperature {
+		// If this is a temperature sensor, fetch real-time data from the temperature API
 		tempData, err := h.TemperatureService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
 		if err == nil {
 			// Update sensor with real-time data

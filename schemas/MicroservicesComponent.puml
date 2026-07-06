@@ -1,0 +1,16 @@
+@startuml Microservices
+
+title Warmhouse Microservices Device Connector Component Diagram
+
+!include <C4/C4_Component>
+
+Container_Boundary(DeviceConnectorService, "Device Connector Service", "Service", "Handles user interactions and system management") {
+    Component(API, "Device Connector API", "Component", "Exposes device state to the rest of the world")
+    Component(StateManager, "Device State Manager", "Component", "Holds up to date device state")
+    Component(CommandProcessor, "Device Command Processor", "Component", "Processes device command queue and executes commands using device external API")
+    Component(TelemetryExporter, "Device Telemetry Exporter", "Component", "Collects device data using external API by polling or processing pushes from the devices and expots it")
+}
+
+System_Ext(DeviceAPI, "Device API", "Abstraction that represents interaction with physical devices")
+
+@enduml

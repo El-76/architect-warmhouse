@@ -6,21 +6,22 @@ title Warmhouse Microservices Container Diagram
 
 Person(User, "User", "A user of the warmhouse system")
 Person(Admin, "Administrator", "An administrator managing the system")
-'System(WarmhouseSystem, "Warmhouse System", "System managing, issuing commands to and collecting data from temperature sensors")
 
 System_Boundary(WarmhouseSystem, "Warmhouse System", "System managing, issuing commands to and collecting data from temperature sensors") {
-    Container(WebUI, "Web UI Microfrontend", "Service", "Handles user interactions and system management")
-    Container(MobileUI, "Mobile UI", "Service", "Handles user interactions and system management")
-    Container(UIAPIGateway, "UI API Gateway", "Service", "Handles user interactions and system management")
-    Container(WebAdminUI, "Web Admin UI", "Service", "Handles user interactions and system management")
-    Container(AdminUIAPIGateway, "Admin UI API Gateway", "Service", "Handles user interactions and system management")
-    Container(DeviceRepositoryService, "Device Repository Service", "Service", "Handles user interactions and system management")
-    ContainerDb(DeviceRepositoryDatabase, "Device Database", "Service", "Handles user interactions and system management")
-    Container(DeviceConnectorService, "Device Connector Service", "Service", "Handles user interactions and system management")
-    Container(SiteRepositoryService, "Site Repository Service", "Service", "Handles user interactions and system management")
-    ContainerDb(SiteRepositoryDatabase, "Site Database", "Service", "Handles user interactions and system management")
-    Container(UserRepositoryService, "User Repository Service", "Service", "Handles user interactions and system management")
-    ContainerDb(UserRepositoryDatabase, "User Database", "Service", "Handles user interactions and system management")
+    Container(WebUI, "Web UI", "Microfrontend", "End-user interface Web UI fronend")
+    Container(MobileUI, "Mobile UI", "Application", "End-user interface mobile app")
+    Container(UIAPIGateway, "UI API Gateway", "Service", "API gateway for both end-user UI modules")
+    Container(WebAdminUI, "Web Admin UI", "Service", "Admin user interface Web UI fronend")
+    Container(AdminUIAPIGateway, "Admin UI API Gateway", "Service", "API gateway for both admin UI")
+    Container(DeviceRepositoryService, "Device Repository Service", "Service", "Holds device entities, performs CRUD operations")
+    ContainerDb(DeviceRepositoryDatabase, "Device Database", "Service", "Holds static device data")
+    Container(DeviceConnectorService, "Device Connector Service", "Service", "Talks to devices via external API, asynchronousyl processes commands to be passed to the devices, publishes device statuses (command results) and telemetry values")
+    Container(TelemetryService, "Telemetry Service", "Service", "Collects, aggregates and caches telemetry data to provide it to the other services with low latency")
+    Container(SiteRepositoryService, "Site Repository Service", "Service", "Holds site entities, performs CRUD operations")
+    ContainerDb(SiteRepositoryDatabase, "Site Database", "Service", "Holds site data")
+    Container(UserRepositoryService, "User Repository Service", "Service", "Holds user entities, performs CRUD operations")
+    ContainerDb(UserRepositoryDatabase, "User Database", "Service", "Holds user data")
+    ComponentDb(MessageQueuee, "Message Queue", "Service", "Passes telemetry, commands and their results among services")
 }
 
 System_Ext(DeviceAPI, "Device API", "External API for temperature sensors")
@@ -31,6 +32,7 @@ Rel(Admin, WebAdminUI, "Manages the system")
 Rel(WebUI, UIAPIGateway, "Calls")
 Rel(MobileUI, UIAPIGateway, "Calls")
 Rel(UIAPIGateway, DeviceRepositoryService, "Calls")
+Rel(UIAPIGateway, TelemetryService, "Calls")
 Rel(DeviceRepositoryService, DeviceRepositoryDatabase, "Uses")
 Rel(UIAPIGateway, SiteRepositoryService, "Calls")
 Rel(SiteRepositoryService, SiteRepositoryDatabase, "Uses")
@@ -43,7 +45,7 @@ Rel(WebAdminUI, AdminUIAPIGateway, "Calls")
 Rel(AdminUIAPIGateway, DeviceRepositoryService, "Calls")
 Rel(AdminUIAPIGateway, UserRepositoryService, "Calls")
 Rel(AdminUIAPIGateway, SiteRepositoryService, "Calls")
-
-
+Rel(TelemetryService, MessageQueuee, "Consumes telemetry")
+BiRel(DeviceConnectorService, MessageQueuee, "Publishes telemetry and command results, consumes commands")
 
 @enduml

@@ -1,6 +1,28 @@
 version: '3.8'
 
 services:
+  asyncapi-viewer:
+    build:
+      context: ../docs/asyncapi
+      dockerfile: Dockerfile
+    container_name: asyncapi-viewer
+    ports:
+      - "8086:80"
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8085:8080"
+    environment:
+      # Defines the selectable options in the top-bar dropdown menu
+      URLS: "[
+        { url: './spec/docs/openapi/device.yaml', name: 'Device Repository API' },
+        { url: './spec/docs/openapi/site.yaml', name: 'Site Repository API' },
+        { url: './spec/docs/openapi/user.yaml', name: 'User Repository API' }
+      ]"
+    volumes:
+      - ..:/usr/share/nginx/html/spec
+
   redis:
     image: redis:7-alpine
     container_name: smarthome-redis

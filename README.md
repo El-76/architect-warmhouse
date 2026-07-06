@@ -136,11 +136,17 @@ Accounting - система не бесплатная?
 
 # Задание 5. Работа с docker и docker-compose
 
+### Вызов Create Sensor
+
 ![Create Sensor](./create-sensor.png)
 
-![Get All Sensors #1](./get-all-sensors-1.png)
+### Вызов Get All Sensors
 
-![Get All Sensors #2](./get-all-sensors-2.png)
+![Get All Sensors 1](./get-all-sensors-1.png)
+
+### Повторный вызов Get All Sensors
+
+![Get All Sensors 2](./get-all-sensors-2.png)
 
 # **Задание 6. Разработка MVP**
 
